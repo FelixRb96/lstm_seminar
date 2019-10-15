@@ -1,5 +1,5 @@
 """
-THERE ARE MISSING VALUES SET TO -99 !
+The file to initialize the training of the models. For the given structure of the project.
 """
 
 import tensorflow as tf
@@ -9,6 +9,9 @@ import pandas as pd
 import pickle 
 
 def get_lstm_model(batch_input_shape = (1,6,1)):
+    """
+    returns an uncompiled lstm model for the wave dataset
+    """
     model = keras.models.Sequential([
         keras.layers.LSTM(
             16, 
@@ -21,6 +24,9 @@ def get_lstm_model(batch_input_shape = (1,6,1)):
     return model
 
 def data(output_col):
+    """
+    returns a tuple of np.arrays for the training.
+    """
     path = "../data/buoy_data.csv"
     index_col = "Date/Time"
     n_col = 6
@@ -28,6 +34,7 @@ def data(output_col):
     df = pd.read_csv(path)
     df.set_index(index_col, inplace=True)
     df = df.loc['01/01/2017 01:00':]
+    df.rename(columns={"Peak Direction": "Peak_Direction"}, inplace=True)
     df.interpolate(inplace=True)
     x_arr = df[:-1].values
     y_arr = df[output_col][1:].values
@@ -38,11 +45,11 @@ def data(output_col):
 if __name__ == "__main__":
 
     output_cols = [
-            'Hs', 
-            'Hmax', 
-            'Tz', 
-            'Tp', 
-            'Peak Direction', 
+            # 'Hs', 
+            # 'Hmax', 
+            # 'Tz', 
+            # 'Tp', 
+            # 'Peak_Direction', 
             'SST'
             ]
 
@@ -92,4 +99,4 @@ if __name__ == "__main__":
 
         model.save_weights(f"../models/lstm_{col}.h5") 
         hist_df = pd.DataFrame(hist.history)
-        hist_df.to_pickle("../models/lstm_{col}_hist.pkl")
+        hist_df.to_pickle(f"../models/lstm_{col}_hist.pkl")
