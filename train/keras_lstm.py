@@ -23,6 +23,17 @@ def get_lstm_model(batch_input_shape = (1,6,1)):
 
     return model
 
+def get_parallel_pred_model(batch_input_shape = (1,6,1)):
+    model = keras.models.Sequential([
+        keras.layers.LSTM(
+            128, 
+            stateful = True,
+            batch_input_shape = batch_input_shape,
+            ),
+        keras.layers.Dense(6,activation = keras.activations.softplus)
+        ])
+    return model
+
 def data(output_col):
     """
     returns a tuple of np.arrays for the training.
@@ -47,9 +58,9 @@ if __name__ == "__main__":
     output_cols = [
             # 'Hs', 
             # 'Hmax', 
-            # 'Tz', 
-            # 'Tp', 
-            # 'Peak_Direction', 
+            'Tz', 
+            'Tp', 
+            'Peak_Direction', 
             'SST'
             ]
 
@@ -61,8 +72,8 @@ if __name__ == "__main__":
 
         x_arr, y_arr = data(col)
         
-        opt = keras.optimizers.Adam(lr = 0.00008)
-        if col == "Hs" or col == "Hmax":
+        opt = keras.optimizers.Adam(lr = 0.00001)
+        if col == "Hs" or col == "Hmax" or col == "SST":
             loss = keras.losses.MAE
         else:
             loss = keras.losses.MSE
@@ -79,6 +90,12 @@ if __name__ == "__main__":
 
 
         model = get_lstm_model()
+        # remove this line if files do not exist
+        model.load_weights(f"../models/lstm_{col}.h5")
+
+        if col == "SST":
+            opt = keras.optimizers.Adam(lr = 0.0000001)
+
         model.compile(
                 optimizer=opt,
                 loss=loss,
