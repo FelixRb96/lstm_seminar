@@ -24,6 +24,9 @@ def get_lstm_model(batch_input_shape = (1,6,1)):
     return model
 
 def get_parallel_pred_model(batch_input_shape = (1,6,1)):
+    """
+    unused
+    """
     model = keras.models.Sequential([
         keras.layers.LSTM(
             128, 
@@ -56,8 +59,8 @@ def data(output_col):
 if __name__ == "__main__":
 
     output_cols = [
-            # 'Hs', 
-            # 'Hmax', 
+            'Hs', 
+            'Hmax', 
             'Tz', 
             'Tp', 
             'Peak_Direction', 
